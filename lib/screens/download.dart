@@ -8,8 +8,6 @@ class Download extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      "Download"
-    );
+    return const Text("Download");
   }
 }

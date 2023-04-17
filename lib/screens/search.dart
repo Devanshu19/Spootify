@@ -8,8 +8,6 @@ class Search extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      "Search"
-    );
+    return const Text("Search");
   }
 }
