@@ -38,9 +38,6 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Spootify Music App"),
-      ),
       body: tabs[currentTabIndex],
       bottomNavigationBar: SizedBox(
         height: 70,

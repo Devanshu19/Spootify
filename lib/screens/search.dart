@@ -8,6 +8,21 @@ class Search extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text("Search");
+    return SafeArea(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.blueGrey.shade300,
+                Colors.black45,
+                Colors.black54,
+                Colors.black87
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight
+            )
+          ),
+        )
+    );
   }
 }
