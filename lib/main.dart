@@ -17,7 +17,7 @@ class Spootify extends StatelessWidget {
       darkTheme: ThemeData(
           primarySwatch: Colors.green,
           brightness: Brightness.dark,
-          fontFamily: "Montserrat"),
+          fontFamily: "MontserratBold"),
       home: const HomePage(),
     );
   }
@@ -42,6 +42,7 @@ class HomePageState extends State<HomePage> {
       bottomNavigationBar: SizedBox(
         height: 70,
         child: BottomNavigationBar(
+          backgroundColor: Colors.black54,
           onTap: (tappedItemIndex) {
             currentTabIndex = tappedItemIndex;
             setState(() {});

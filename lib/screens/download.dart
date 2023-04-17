@@ -1,6 +1,3 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-
 import 'package:flutter/material.dart';
 
 class Download extends StatelessWidget {
@@ -15,8 +12,7 @@ class Download extends StatelessWidget {
               colors: [
                 Colors.blueGrey.shade300,
                 Colors.black45,
-                Colors.black54,
-                Colors.black87
+                Colors.black54
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight
