@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:spootify/helpers/music_objects.dart';
+import 'package:spootify/helpers/spotify_helper.dart';
 
+import 'package:spootify/config.dart' as config;
+
+// Controller for playlist search bar textField
+final TextEditingController _textEditingController = TextEditingController();
+
+// Main Search Tab of the application
 class Search extends StatelessWidget {
   const Search({super.key});
 
@@ -33,6 +40,7 @@ class Search extends StatelessWidget {
   }
 }
 
+// Main Search Bar including the search Text Field and Search Button
 class SearchAppBar extends StatelessWidget {
   const SearchAppBar({super.key});
 
@@ -58,19 +66,22 @@ class SearchAppBar extends StatelessWidget {
   }
 }
 
+// The actual search Text Field
 class SearchBar extends StatelessWidget {
+
   const SearchBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(left: 16, right: 16),
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16),
       child: TextField(
-        style: TextStyle(
+        controller: _textEditingController,
+        style: const TextStyle(
           fontSize: 20,
           fontFamily: "MontserratBold"
         ),
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           hintText: "Enter Spotify Playlist link",
           hintStyle: TextStyle(
             fontSize: 16,
@@ -82,6 +93,7 @@ class SearchBar extends StatelessWidget {
   }
 }
 
+// The actual search button 
 class SearchButton extends StatefulWidget {
   const SearchButton({super.key});
 
@@ -93,14 +105,31 @@ class SearchButtonState extends State<SearchButton>{
 
   Color buttonColor = Colors.green;
 
-  void onSearchButtonPressed(){
+  void onSearchButtonPressed() async {
+    print("Searching for : ${_textEditingController.text}");
+
+    final playlistID = _textEditingController.text.replaceFirst("${config.spotifyPlaylistBase}/", "").split("?")[0];
+
+    final playlistDetails = await getSpotifyPlaylistDetails(playlistID);
+
+    final tracks = playlistDetails["tracks"]["items"];
+
+    final trackObjects = [];
+
+    for (var track in tracks) {
+      if(track["is_local"]) continue;
+
+      SpotifyTrack newTrack = SpotifyTrack(track["track"]["name"], track["track"]["href"], playlistDetails["images"][0]["url"], track["track"]["artists"][0]["name"]);
+      trackObjects.add(newTrack);
+    }
+
+
 
   }
 
   void searchButtonTapped(TapDownDetails details){
     Future.delayed(const Duration(milliseconds: 0));
     buttonColor = Colors.lightGreen;
-    print("Tapped");
     setState(() {});
   }
 
@@ -112,7 +141,6 @@ class SearchButtonState extends State<SearchButton>{
         Future.delayed(const Duration(milliseconds: 0));
         buttonColor = Colors.green;
         setState(() {});
-        print("Tap Cancelled");
       },
       child: SizedBox(
         height: 40,

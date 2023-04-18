@@ -3,7 +3,13 @@ import 'package:spootify/screens/home.dart';
 import 'package:spootify/screens/search.dart';
 import 'package:spootify/screens/download.dart';
 
-void main() {
+import 'package:spootify/helpers/spotify_helper.dart' as spotify_helper;
+import 'package:spootify/config.dart' as config;
+
+void main() async {
+
+  config.spotifyAccessToken = await spotify_helper.getSpotifyAccessToken();
+
   runApp(const Spootify());
 }
 
