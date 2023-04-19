@@ -5,11 +5,31 @@ import 'package:spootify/helpers/spotify_helper.dart';
 import 'package:spootify/config.dart' as config;
 
 // Controller for playlist search bar textField
-final TextEditingController _textEditingController = TextEditingController();
+final TextEditingController _textEditingController = TextEditingController(text: "https://open.spotify.com/playlist/1TRRl6k0ixnAZtVGahDjSX?si=2b87a08d6acb4290");
+
+final List<SpotifyTrack> trackObjects = [];
+final List<Track> trackButtons = [];
 
 // Main Search Tab of the application
-class Search extends StatelessWidget {
+class Search extends StatefulWidget {
   const Search({super.key});
+
+  @override
+  State<StatefulWidget> createState() => SearchState();
+}
+
+class SearchState extends State<Search>{
+
+  late Function updateTracks = (){
+
+    trackButtons.clear();
+
+    for (SpotifyTrack trackObject in trackObjects) {
+      trackButtons.add(Track(trackObject.trackName, trackObject.trackImageUrl, trackObject.artistName));
+    }
+
+    setState(() {});
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +47,16 @@ class Search extends StatelessWidget {
             )
           ),
           child: Column(
-            children: const [
-              SearchAppBar(),
-              SizedBox(height: 10),
-              SearchBar(),
-              SizedBox(height: 10),
-              SearchButton()
+            children: [
+              const SearchAppBar(),
+              const SizedBox(height: 10),
+              const SearchBar(),
+              const SizedBox(height: 10),
+              SearchButton(updateTracks),
+              const SizedBox(height: 10),
+              SingleChildScrollView(
+                child: Column(children: trackButtons),
+              )
             ]
           ),
         )
@@ -76,6 +100,7 @@ class SearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16),
       child: TextField(
+
         controller: _textEditingController,
         style: const TextStyle(
           fontSize: 20,
@@ -94,16 +119,13 @@ class SearchBar extends StatelessWidget {
 }
 
 // The actual search button 
-class SearchButton extends StatefulWidget {
-  const SearchButton({super.key});
+class SearchButton extends StatelessWidget {
 
-  @override
-  State<StatefulWidget> createState() => SearchButtonState();
-}
-
-class SearchButtonState extends State<SearchButton>{
-
+  final Function updateTrackFunc;
   Color buttonColor = Colors.green;
+
+  SearchButton(this.updateTrackFunc, {super.key});
+
 
   void onSearchButtonPressed() async {
     print("Searching for : ${_textEditingController.text}");
@@ -114,23 +136,21 @@ class SearchButtonState extends State<SearchButton>{
 
     final tracks = playlistDetails["tracks"]["items"];
 
-    final trackObjects = [];
-
     for (var track in tracks) {
       if(track["is_local"]) continue;
 
-      SpotifyTrack newTrack = SpotifyTrack(track["track"]["name"], track["track"]["href"], playlistDetails["images"][0]["url"], track["track"]["artists"][0]["name"]);
+      SpotifyTrack newTrack = SpotifyTrack(track["track"]["name"], track["track"]["href"], track["track"]["album"]["images"][0]["url"], track["track"]["artists"][0]["name"]);
       trackObjects.add(newTrack);
     }
 
+    updateTrackFunc();
 
-
+    print("Updated Tracks");
   }
 
   void searchButtonTapped(TapDownDetails details){
     Future.delayed(const Duration(milliseconds: 0));
     buttonColor = Colors.lightGreen;
-    setState(() {});
   }
 
   @override
@@ -140,7 +160,6 @@ class SearchButtonState extends State<SearchButton>{
       onTapCancel: () {
         Future.delayed(const Duration(milliseconds: 0));
         buttonColor = Colors.green;
-        setState(() {});
       },
       child: SizedBox(
         height: 40,
@@ -175,6 +194,72 @@ class SearchButtonState extends State<SearchButton>{
           ),
         ),
       ),
+    );
+  }
+}
+
+class Track extends StatelessWidget {
+
+  final String trackName;
+  final String trackArtist;
+  final String trackImageUrl;
+
+  final double trackHeight = 70; 
+
+  Track(this.trackName, this.trackImageUrl, this.trackArtist);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.only(top:5, left:5, right:5),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black38,
+            borderRadius: BorderRadius.circular(10)
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: trackHeight,
+                height: trackHeight,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(trackImageUrl)
+                )
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: SizedBox(
+                  height: trackHeight,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          trackName.trim(), 
+                          textAlign: TextAlign.left,
+                          style: const TextStyle(
+                            fontFamily: "MontserratBold",
+                            fontSize: 15
+                          )),
+                      ),
+                      Text(
+                        trackArtist.trim(), 
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w200
+                        )
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ]
+          ),
+        ),
     );
   }
 }

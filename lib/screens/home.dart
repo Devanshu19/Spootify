@@ -43,8 +43,8 @@ class HomeAppBar extends StatelessWidget {
           title: const Text(
             "Good Morning", 
             style: TextStyle(
-              fontFamily: "MontserratExtraBold",
-              fontSize: 30
+              fontFamily: "MontserratBold",
+              fontSize: 30,
             )
           ),
           actions: const [
