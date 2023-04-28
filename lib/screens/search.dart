@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spootify/helpers/music_objects.dart';
 import 'package:spootify/helpers/spotify_helper.dart';
+import 'package:spootify/helpers/youtube_helper.dart';
 
 import 'package:spootify/config.dart' as config;
 
@@ -48,15 +49,20 @@ class SearchState extends State<Search>{
           ),
           child: Column(
             children: [
-              const SearchAppBar(),
+              const SearchAppBar(),                   // Search heading
               const SizedBox(height: 10),
-              const SearchBar(),
+              const SearchBar(),                      // Search Bar
               const SizedBox(height: 10),
-              SearchButton(updateTracks),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                child: Column(children: trackButtons),
-              )
+              SearchButton(updateTracks),             // Search Button
+              const SizedBox(height: 10), 
+              Expanded(                               // Track Display Area
+                child: SizedBox(
+                  height: 500,
+                  child: SingleChildScrollView(       
+                    child: Column(children: trackButtons),
+                  ),
+                ),
+              )             
             ]
           ),
         )
@@ -136,6 +142,8 @@ class SearchButton extends StatelessWidget {
 
     final tracks = playlistDetails["tracks"]["items"];
 
+    trackObjects.clear();
+
     for (var track in tracks) {
       if(track["is_local"]) continue;
 
@@ -144,6 +152,8 @@ class SearchButton extends StatelessWidget {
     }
 
     updateTrackFunc();
+
+    print(await downloadFromYoutube());
 
     print("Updated Tracks");
   }
@@ -206,12 +216,14 @@ class Track extends StatelessWidget {
 
   final double trackHeight = 70; 
 
+  final int maxCharactersInTitle = 40;
+
   Track(this.trackName, this.trackImageUrl, this.trackArtist);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.only(top:5, left:5, right:5),
+        padding: const EdgeInsets.only(bottom:5, left:5, right:5),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.black38,
@@ -219,7 +231,7 @@ class Track extends StatelessWidget {
           ),
           child: Row(
             children: [
-              SizedBox(
+              SizedBox(                                       // Cover Image
                 width: trackHeight,
                 height: trackHeight,
                 child: ClipRRect(
@@ -227,36 +239,45 @@ class Track extends StatelessWidget {
                   child: Image.network(trackImageUrl)
                 )
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 5),
-                child: SizedBox(
-                  height: trackHeight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          trackName.trim(), 
+              Expanded(
+                child: Padding(                                        // Name and artist
+                  padding: const EdgeInsets.only(left: 10),
+                  child: SizedBox(
+                    height: trackHeight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Text(
+                            trackName.length > maxCharactersInTitle ? trackName.replaceRange(maxCharactersInTitle, trackName.length - 1, "...") : trackName, 
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontFamily: "MontserratBold",
+                              fontSize: 15
+                            )),
+                        ),
+                        Text(
+                          trackArtist.length > maxCharactersInTitle ? trackArtist.replaceRange(maxCharactersInTitle, trackArtist.length - 1, "...") : trackArtist, 
                           textAlign: TextAlign.left,
                           style: const TextStyle(
-                            fontFamily: "MontserratBold",
-                            fontSize: 15
-                          )),
-                      ),
-                      Text(
-                        trackArtist.trim(), 
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w200
-                        )
-                      ),
-                    ],
+                            fontSize: 10,
+                            fontWeight: FontWeight.w200
+                          )
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
+              SizedBox(
+                height: trackHeight,
+                child: IconButton(
+                  onPressed: (){},
+                  icon: const Icon(Icons.file_download_outlined)
+                ),
+              )
             ]
           ),
         ),
